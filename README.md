@@ -1,5 +1,10 @@
 # 🎮 Megaman Portfolio
 
+[![Render Status](https://img.shields.io/badge/Render-Deployed-brightgreen?logo=render)](https://megaman-site.onrender.com)
+[![Ruby Version](https://img.shields.io/badge/Ruby-3.2.2-red?logo=ruby)](https://www.ruby-lang.org/)
+[![Rails Version](https://img.shields.io/badge/Rails-7.1.3-brightred?logo=rails)](https://rubyonrails.org/)
+[![Database](https://img.shields.io/badge/Database-PostgreSQL-blue?logo=postgresql)](https://www.postgresql.org/)
+
 ## A Modern Personal Website Built with Cutting-Edge Web Technologies
 
 Welcome to my digital space — a professionally crafted personal portfolio showcasing projects, insights, and technical expertise. This site represents the intersection of elegant design and robust engineering.
