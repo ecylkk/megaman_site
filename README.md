@@ -17,7 +17,7 @@ Built with modern, production-grade technologies:
 | **Backend Framework** | Rails | 7.1.3 |
 | **Language** | Ruby | 3.2.2 |
 | **Frontend Framework** | Hotwire (Stimulus + Turbo) | Latest |
-| **Database** | SQLite | 1.4+ |
+| **Database** | PostgreSQL (Prod) / SQLite (Dev) | 1.4+/Latest |
 | **Server** | Puma | 5.0+ |
 | **Asset Pipeline** | Sprockets | Modern |
 | **Content Rendering** | Markdown (Redcarpet) | Latest |
@@ -29,7 +29,8 @@ Built with modern, production-grade technologies:
 ### Requirements
 - Ruby 3.2.2
 - Bundler
-- SQLite (included with system dependencies)
+- SQLite (local development)
+- PostgreSQL (production deployment)
 
 ### Setup & Launch
 
