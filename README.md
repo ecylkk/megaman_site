@@ -1,24 +1,74 @@
-# README
+# 🎮 Megaman Portfolio
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+## A Modern Personal Website Built with Cutting-Edge Web Technologies
 
-Things you may want to cover:
+Welcome to my digital space — a professionally crafted personal portfolio showcasing projects, insights, and technical expertise. This site represents the intersection of elegant design and robust engineering.
 
-* Ruby version
+**Visit:** [https://megaman-site.onrender.com](https://megaman-site.onrender.com)
 
-* System dependencies
+---
 
-* Configuration
+## ✨ Technical Stack
 
-* Database creation
+Built with modern, production-grade technologies:
 
-* Database initialization
+| Component | Technology | Version |
+|-----------|-----------|---------|
+| **Backend Framework** | Rails | 7.1.3 |
+| **Language** | Ruby | 3.2.2 |
+| **Frontend Framework** | Hotwire (Stimulus + Turbo) | Latest |
+| **Database** | SQLite | 1.4+ |
+| **Server** | Puma | 5.0+ |
+| **Asset Pipeline** | Sprockets | Modern |
+| **Content Rendering** | Markdown (Redcarpet) | Latest |
 
-* How to run the test suite
+---
 
-* Services (job queues, cache servers, search engines, etc.)
+## 🚀 Quick Start
 
-* Deployment instructions
+### Requirements
+- Ruby 3.2.2
+- Bundler
+- SQLite (included with system dependencies)
 
-* ...
+### Setup & Launch
+
+```bash
+# Clone and navigate to project
+cd /path/to/megaman_site
+
+# Run automated setup (first time only)
+bin/setup
+
+# Start development server
+bin/rails server
+
+# Visit in browser
+# → http://localhost:3000
+```
+
+The `bin/setup` script automatically handles:
+- Gem dependency installation
+- Database preparation
+- System cleanup and initialization
+
+---
+
+## 📐 Architecture Highlights
+
+- **Responsive Design** — Optimized for all screen sizes
+- **Dynamic Content** — Markdown-powered content rendering
+- **Real-time Features** — Powered by Hotwire for seamless UX
+- **Production Ready** — Deployed on Render with robust infrastructure
+
+---
+
+## 📧 Contact & Social
+
+For inquiries or collaboration opportunities, please reach out through the website.
+
+**Hosted on:** [Render](https://render.com) — Global CDN with zero-downtime deployments
+
+---
+
+*Crafted with attention to detail and a passion for elegant software.*
