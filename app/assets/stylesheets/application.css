@@ -1,0 +1,38 @@
+/* app/assets/stylesheets/application.css */
+
+/* 你现有的 manifest 注释不动 */
+
+body {
+  font-family: 'Press Start 2P', monospace;
+  background-color: black;
+  color: #00ff00;
+}
+
+h1 {
+  font-size: 1.5rem;
+  text-align: center;
+}
+
+ul {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+  list-style: none;
+  padding: 0;
+  justify-items: center;
+}
+
+ul li a {
+  display: block;
+  padding: 20px;
+  background-color: #111;
+  border: 2px solid #00ff00;
+  text-decoration: none;
+  color: #00ff00;
+  text-align: center;
+}
+
+ul li a:hover {
+  background-color: #00ff00;
+  color: #000;
+}

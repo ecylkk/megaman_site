@@ -1,0 +1,191 @@
+<%# Pixel Mega Man style Stage Select with unlock state, hover, keyboard nav, and single-play-on-hover BGM %>
+
+<!-- 加载像素风格字体 -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+
+<style>
+:root{
+  --bg: #071022;
+  --accent: #39f;
+  --locked: #444;
+}
+html,body { height: 100%; margin:0; font-family: 'Press Start 2P', monospace; }
+body { background: var(--bg); color: #dfe7ff; padding: 30px; }
+
+h1, .hint, button { font-family: 'Press Start 2P', monospace !important; }
+
+.container { max-width: 960px; margin: 0 auto; }
+h1 { text-align:center; font-size:16px; margin-bottom:12px; letter-spacing:2px; }
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 18px;
+  margin-top: 8px;
+}
+
+.boss {
+  background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(0,0,0,0.05));
+  border: 3px solid rgba(255,255,255,0.06);
+  padding: 12px;
+  height: 160px;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+  position:relative;
+  cursor: pointer;
+  transition: transform .08s ease, box-shadow .12s ease, border-color .12s;
+  user-select: none;
+  font-family: 'Press Start 2P', monospace;
+}
+
+.boss.unlocked:hover { transform: translateY(-8px); box-shadow: 0 12px 22px rgba(0,0,0,0.6); border-color: var(--accent); }
+
+.thumb {
+  width:88px; height:88px; border-radius:6px;
+  display:flex; align-items:center; justify-content:center;
+  font-size:22px; color:#fff;
+  box-shadow: inset 0 -6px 0 rgba(0,0,0,0.25);
+}
+
+.boss.locked { opacity: 0.55; filter: grayscale(.5); box-shadow: none; cursor: not-allowed; }
+.boss.unlocked .thumb { background: linear-gradient(180deg,#222,#111); }
+.boss.locked .thumb { background: linear-gradient(180deg,#222,#111); border:2px dashed var(--locked); }
+
+.name { margin-top:8px; font-size:11px; letter-spacing:1px; text-align:center; }
+.sub { font-size:9px; opacity:.85; margin-top:4px; }
+
+.boss.selected { outline: 3px solid #fff2; box-shadow: 0 0 0 4px rgba(57,153,255,0.06); transform: translateY(-6px); }
+
+.controls { display:flex; justify-content:space-between; align-items:center; margin-top:16px; gap:12px; flex-wrap:wrap; }
+.bgm-btn, .clear-all { font-family: 'Press Start 2P', monospace; font-size:10px; padding:8px 12px; border-radius:6px; cursor:pointer; }
+.bgm-btn { background:#0b1320; border:1px solid rgba(255,255,255,0.06); color:#cfe; }
+.clear-all { background:#111; border:1px solid rgba(255,255,255,0.04); color:#f99; }
+.hint { font-size:10px; opacity:.9; }
+</style>
+
+<div class="container">
+  <h1>STAGE SELECT</h1>
+
+  <div id="grid" class="grid">
+    <% @stages.each_with_index do |s, idx| %>
+      <% unlocked = @cleared.include?(s[:id]) || idx < 3 %>
+      <div tabindex="0" role="button" class="boss <%= unlocked ? 'unlocked' : 'locked' %>" data-id="<%= s[:id] %>" data-idx="<%= idx %>">
+        <div class="thumb"><%= unlocked ? "◎" : "×" %></div>
+        <div class="name"><%= s[:name] %></div>
+        <div class="sub"><%= s[:subtitle] %></div>
+      </div>
+    <% end %>
+  </div>
+
+  <div class="controls">
+    <div class="hint">Use ← → ↑ ↓ to move, Enter to open. Locked bosses show ×. 前 3 个示例默认解锁。</div>
+    <div style="display:flex;gap:8px;">
+      <button id="bgmToggle" class="bgm-btn">PLAY MUSIC</button>
+      <button id="clearData" class="clear-all" title="清空已通关状态">CLEAR ALL</button>
+    </div>
+  </div>
+</div>
+
+<audio id="bgm" preload="auto" crossorigin="anonymous">
+  <source src="<%= asset_path 'select_music.mp3' %>" type="audio/mpeg">
+</audio>
+
+<script>
+(function(){
+  const grid = document.getElementById('grid')
+  const bosses = Array.from(grid.querySelectorAll('.boss'))
+  const bgm = document.getElementById('bgm')
+  const btn = document.getElementById('bgmToggle')
+  const clearBtn = document.getElementById('clearData')
+
+  // keyboard selection
+  let selected = 0
+  if (bosses.length > 0) bosses[selected].classList.add('selected')
+  function selectIndex(i){
+    bosses[selected].classList.remove('selected')
+    selected = (i + bosses.length) % bosses.length
+    bosses[selected].classList.add('selected')
+    try { bosses[selected].focus() } catch(e){}
+  }
+  window.addEventListener('keydown', (e) => {
+    const cols = 3
+    if (['ArrowRight','ArrowLeft','ArrowUp','ArrowDown','Enter'].includes(e.key)) e.preventDefault()
+    if (e.key==='ArrowRight') selectIndex(selected+1)
+    if (e.key==='ArrowLeft') selectIndex(selected-1)
+    if (e.key==='ArrowUp') selectIndex(selected-cols)
+    if (e.key==='ArrowDown') selectIndex(selected+cols)
+    if (e.key==='Enter') openBoss(bosses[selected])
+  })
+
+  // boss click/hover
+  bosses.forEach(b => {
+    b.addEventListener('click', () => openBoss(b))
+    b.addEventListener('mouseover', () => {
+      bosses[selected].classList.remove('selected')
+      selected = parseInt(b.dataset.idx, 10)
+      bosses[selected].classList.add('selected')
+      triggerBGMOnce()
+    })
+  })
+
+  function openBoss(bossEl){
+    if (!bossEl) return
+    if (bossEl.classList.contains('locked')){
+      bossEl.animate([{ transform:'translateY(0)'},{ transform:'translateY(-6px)'},{ transform:'translateY(0)'}],{duration:220})
+      return
+    }
+    window.location.href = "/stage/"+bossEl.dataset.id
+  }
+
+  // ---------- single-play-on-hover BGM ----------
+  let bgmPlayed = false
+  bgm.volume = 0.2
+  bgm.loop = false
+
+  async function triggerBGMOnce(){
+    if (bgmPlayed) return
+    try{
+      await bgm.play()
+      bgmPlayed=true
+    }catch(err){
+      console.warn('BGM autoplay blocked, waiting for gesture')
+      window.addEventListener('click', playBGMOnGestureOnce, {once:true})
+      window.addEventListener('keydown', playBGMOnGestureOnce, {once:true})
+    }
+  }
+
+  async function playBGMOnGestureOnce(){
+    if(bgmPlayed) return
+    try{ await bgm.play(); bgmPlayed=true }catch(e){console.warn('BGM failed on gesture', e)}
+  }
+
+  // PLAY/PAUSE button
+  btn.addEventListener('click', async ev=>{
+    ev.preventDefault()
+    try{
+      if(bgm.paused){ await bgm.play(); btn.textContent='PAUSE MUSIC' }
+      else{ bgm.pause(); btn.textContent='PLAY MUSIC' }
+    }catch(err){ console.warn('button play error', err) }
+  })
+
+  // CLEAR ALL
+  if(clearBtn){
+    clearBtn.addEventListener('click', async ()=>{
+      if(!confirm('确定要清空所有已通关状态吗？')) return
+      try{
+        const res = await fetch('/clear_stage',{
+          method:'POST',
+          headers:{'Content-Type':'application/json','X-CSRF-Token':'<%= form_authenticity_token %>'},
+          body:JSON.stringify({stage_id:'__clear_all__'})
+        })
+        if(res.ok) location.reload()
+        else alert('清空失败')
+      }catch(e){console.error(e); alert('请求失败')}
+    })
+  }
+})();
+</script>

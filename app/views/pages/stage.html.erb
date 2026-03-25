@@ -1,0 +1,52 @@
+<!-- app/views/pages/stage.html.erb -->
+<style>
+  .stage-wrap { max-width: 900px; margin: 28px auto; font-family: 'Press Start 2P', monospace; color:#def; padding: 0 16px; }
+  .stage-header { display:flex; gap:16px; align-items:center; }
+  .thumb { width:96px; height:96px; background:#111; display:flex; align-items:center; justify-content:center; border-radius:6px; font-size:28px; }
+  .btn { margin-top:12px; font-size:11px; padding:8px 12px; border-radius:6px; border:1px solid rgba(255,255,255,0.06); background:#0b1320; cursor:pointer; }
+</style>
+
+<div class="stage-wrap">
+  <div class="stage-header">
+    <div class="thumb">◎</div>
+    <div>
+      <div style="font-size:14px;"><%= @stage[:name] %></div>
+      <div style="font-size:10px;opacity:.85;"><%= @stage[:subtitle] %></div>
+    </div>
+  </div>
+
+  <div style="margin-top:18px; background:#071025; padding:18px; border:1px solid rgba(255,255,255,0.04); white-space:pre-wrap;">
+    <% if defined?(markdown) %>
+      <%= markdown(@content) %>
+    <% else %>
+      <pre style="font-family:inherit;"><%= @content %></pre>
+    <% end %>
+  </div>
+
+  <div>
+    <button id="markClear" class="btn">MARK AS CLEARED</button>
+    <a style="margin-left:12px; font-size:10px; color:#9fd; text-decoration:none;" href="/">← RETURN</a>
+  </div>
+</div>
+
+<script>
+document.getElementById('markClear').addEventListener('click', async () => {
+  const stageId = "<%= @stage[:id] %>";
+  try {
+    const res = await fetch('/clear_stage', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': '<%= form_authenticity_token %>' },
+      body: JSON.stringify({ stage_id: stageId })
+    });
+    if (res.ok) {
+      // go back to select to see unlocked state
+      location.href = "/";
+    } else {
+      alert('标记失败');
+    }
+  } catch(e) {
+    console.error(e);
+    alert('网络错误');
+  }
+});
+</script>
