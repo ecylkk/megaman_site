@@ -1,0 +1,13 @@
+version: '3'
+services:
+  web:
+    image: ruby:3.4
+    volumes:
+      - .:/rails
+      - bundle_data:/usr/local/bundle
+    working_dir: /rails
+    ports:
+      - "3000:3000"
+    command: bash -c "bundle install && bundle exec rails server -b 0.0.0.0"
+volumes:
+  bundle_data:

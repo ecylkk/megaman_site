@@ -4,7 +4,6 @@ class PagesController < ApplicationController
     { id: "snake",  name: "SNAKE MAN",  subtitle: "博客",     img: nil },
     { id: "needle", name: "NEEDLE MAN", subtitle: "技术栈",   img: nil },
     { id: "gemini", name: "GEMINI MAN", subtitle: "作品集",   img: nil },
-    { id: "shadow", name: "SHADOW MAN", subtitle: "关于我",   img: nil },
     { id: "bomb",   name: "BOMB MAN",   subtitle: "小工具",   img: nil },
     { id: "aqua",   name: "AQUA MAN",   subtitle: "文章",     img: nil },
     { id: "leaf",   name: "LEAF MAN",   subtitle: "联系",     img: nil },
