@@ -120,18 +120,15 @@ h1 {
 
 /* ===== Center avatar cell ===== */
 .boss.avatar-cell { cursor: default; }
-.boss.avatar-cell .thumb {
-  background: linear-gradient(180deg, #4a90e2, #2c5aa0);
-  border: 3px solid #fff;
-}
 
 .avatar-img {
-  width: 78px;
-  height: 78px;
-  border-radius: 50%;
+  width: 82px;
+  height: 82px;
+  border-radius: 6px;
   object-fit: cover;
   border: 2px solid #fff;
   transition: filter 0.2s;
+  box-sizing: border-box;
 }
 
 .boss.selected .avatar-img,
@@ -227,12 +224,48 @@ h1 {
 
   // keyboard selection
   let selected = 4  // start on avatar (center)
-  if (bosses.length > 0) bosses[selected].classList.add('selected')
+  
+  const avatarCell = bosses[4]
+  if (avatarCell) {
+    avatarCell.style.transition = 'transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1)'
+    avatarCell.style.transformStyle = 'preserve-3d'
+  }
+
+  function updateAvatarTilt(idx) {
+    if (!avatarCell) return
+    let rx = 0
+    let ry = 0
+    const tilt = 14 // 倾斜角度，可以根据喜好调整
+    
+    if (idx !== 4) {
+      const row = Math.floor(idx / 3)
+      const col = idx % 3
+      
+      // 反转算法：根据你的反馈将倾斜方向完全相反，产生按压/被推开的物理感
+      if (row === 0) rx = tilt
+      else if (row === 2) rx = -tilt
+      
+      if (col === 0) ry = -tilt
+      else if (col === 2) ry = tilt
+      
+      // 掠过其他框时：中间产生3D偏转
+      avatarCell.style.transform = `perspective(800px) rotateX(${rx}deg) rotateY(${ry}deg) translateZ(10px)`
+    } else {
+      // 掠过自己时：恢复原始，稍微浮起保持和其他框一样的悬停凸出
+      avatarCell.style.transform = `perspective(800px) rotateX(0deg) rotateY(0deg) translateZ(0) translateY(-8px)`
+    }
+  }
+
+  if (bosses.length > 0) {
+    bosses[selected].classList.add('selected')
+    updateAvatarTilt(selected)
+  }
 
   function selectIndex(i) {
     bosses[selected].classList.remove('selected')
     selected = (i + bosses.length) % bosses.length
     bosses[selected].classList.add('selected')
+    updateAvatarTilt(selected)
     try { bosses[selected].focus() } catch(e) {}
   }
 
@@ -256,11 +289,19 @@ h1 {
       bosses[selected].classList.remove('selected')
       selected = idx
       bosses[selected].classList.add('selected')
+      updateAvatarTilt(idx)
       triggerBGMOnce()
     })
     b.addEventListener('mouseleave', () => {
       // Keep selected class for keyboard tracking
     })
+  })
+
+  // 当鼠标离开整个九宫格时，重置倾斜和浮动效果，回到静止状态
+  grid.addEventListener('mouseleave', () => {
+    if (avatarCell) {
+      avatarCell.style.transform = `perspective(800px) rotateX(0deg) rotateY(0deg) translateZ(0) translateY(0)`
+    }
   })
 
   function openBoss(bossEl) {
