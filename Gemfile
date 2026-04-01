@@ -1,12 +1,17 @@
 source "https://rubygems.org"
 
-ruby "3.2.2"
+ruby "3.4.9"
 
 # Bundle edge Rails instead: gem "rails", github: "rails/rails", branch: "main"
 gem "rails", "~> 7.1.3"
 
 # Markdown 渲染
 gem "redcarpet"  # 新增，用于渲染 Markdown
+
+# 评论系统支持
+gem "browser"          # 用于解析设备信息 (OS/浏览器)
+gem "image_processing" # 用于 ActiveStorage 图片缩略图处理
+# gem "geocoder"         # 已由控制器手动实现的 fetch_location_from_ip 代替，移除以消除日志警告
 
 # The original asset pipeline for Rails [https://github.com/rails/sprockets-rails]
 gem "sprockets-rails"

@@ -1,12 +1,41 @@
 <!-- app/views/pages/stage.html.erb -->
 <style>
-  .stage-wrap { max-width: 900px; margin: 28px auto; font-family: 'Press Start 2P', monospace; color:#def; padding: 0 16px; }
+  .stage-wrap { max-width: 900px; margin: 28px auto; font-family: 'Press Start 2P', 'DotGothic16', 'SimSun', '宋体', monospace; color:#def; padding: 0 16px; -webkit-font-smoothing: none; font-smooth: never; }
+  .stage-wrap h1, .stage-wrap h2, .stage-wrap p, .stage-wrap pre, .stage-wrap a, .stage-wrap button { font-family: inherit; }
   .stage-header { display:flex; gap:16px; align-items:center; }
   .thumb { width:96px; height:96px; background:#111; display:flex; align-items:center; justify-content:center; border-radius:6px; font-size:28px; }
-  .btn { margin-top:12px; font-size:11px; padding:8px 12px; border-radius:6px; border:1px solid rgba(255,255,255,0.06); background:#0b1320; cursor:pointer; }
+  .btn { margin-top:12px; font-size:11px; padding:8px 12px; border-radius:1px; border:4px solid #000; background:#92cd41; color:white; cursor:pointer; font-family: inherit; box-shadow: inset -4px -4px 0px 0px #4aa52e; position: relative; }
+  .btn:active { box-shadow: inset 4px 4px 0px 0px #4aa52e; top: 2px; }
+  .stage-content { margin-top:18px; background:#071025; padding:18px; border:1px solid rgba(255,255,255,0.04); white-space:pre-wrap; }
+  .stage-content p,
+  .stage-content pre,
+  .stage-content li { font-size: 14px; line-height: 1.9; color: #dfe8ff; }
+  .stage-content.kai-content { text-align: center; padding: 36px 28px; }
+  .stage-content.kai-content p,
+  .stage-content.kai-content pre { font-size: 16px; line-height: 2; color: #ffffff; }
+  .stage-content.kai-content h1 { margin-bottom: 40px; }
+  
+  /* Comments Section Styling */
+  .comments-section { margin-top: 40px; border-top: 4px solid #111; padding-top: 20px; }
+  .comment-item { background: #071025; border: 2px solid rgba(255,255,255,0.05); padding: 12px; margin-bottom: 16px; position: relative; }
+  .comment-meta { font-size: 11px; opacity: 0.82; margin-bottom: 8px; display: flex; flex-wrap: wrap; gap: 8px; border-bottom: 1px dashed rgba(255,255,255,0.1); padding-bottom: 4px; }
+  .comment-body { font-size: 13px; line-height: 1.8; color: #def; word-break: break-word; }
+  .comment-image { margin-top: 10px; max-width: 100%; border: 4px solid #111; image-rendering: pixelated; }
+  
+  .comment-form { margin-top: 30px; background: #0b1320; padding: 20px; border: 4px solid #111; }
+  .form-group { margin-bottom: 15px; }
+  .form-label { display: block; font-size: 10px; margin-bottom: 6px; color: #adf; }
+  .form-input { width: 100%; background: #071025; border: 4px solid #000; color: #fff; padding: 10px; font-family: inherit; font-size: 11px; box-sizing: border-box; outline: none; }
+  .form-input:focus { border-color: #39f; }
+  .file-input-wrapper { margin-top: 8px; }
+
+  .flash-notice { background: #15384d; color: #bff6ff; padding: 10px; border: 2px solid #53d8ff; margin-bottom: 15px; font-size: 9px; text-align: center; box-shadow: 0 0 10px rgba(83,216,255,0.18); }
+  .flash-alert { background: #4a1822; color: #ffd3dc; padding: 10px; border: 2px solid #ff6f91; margin-bottom: 15px; font-size: 9px; text-align: center; box-shadow: 0 0 10px rgba(255,111,145,0.18); }
+
 </style>
 
 <div class="stage-wrap">
+  <% if @stage[:id] != 'kai' %>
   <div class="stage-header">
     <div class="thumb">◎</div>
     <div>
@@ -14,8 +43,9 @@
       <div style="font-size:10px;opacity:.85;"><%= @stage[:subtitle] %></div>
     </div>
   </div>
+  <% end %>
 
-  <div style="margin-top:18px; background:#071025; padding:18px; border:1px solid rgba(255,255,255,0.04); white-space:pre-wrap;">
+  <div class="stage-content <%= 'kai-content' if @stage[:id] == 'kai' %>" style="text-align: <%= @stage[:id] == 'kai' ? 'center' : 'left' %>;">
     <% if defined?(markdown) %>
       <%= markdown(@content) %>
     <% else %>
@@ -24,29 +54,177 @@
   </div>
 
   <div>
-    <button id="markClear" class="btn">MARK AS CLEARED</button>
+    <button id="markClear" class="btn" style="background:#0b1320; border-radius:6px; border:1px solid rgba(255,255,255,0.06); box-shadow:none;">MARK AS CLEARED</button>
     <a style="margin-left:12px; font-size:10px; color:#9fd; text-decoration:none;" href="/">← RETURN</a>
   </div>
+
+  <% if @stage[:id] == 'kai' %>
+    <div class="comments-section">
+      <h2 style="font-size: 14px; text-align: center; margin-bottom: 24px; color: #fff;">- STATION MESSAGES -</h2>
+
+      <% if flash[:notice] %>
+        <div class="flash-notice"><%= flash[:notice] %></div>
+      <% end %>
+      <% if flash[:alert] %>
+        <div class="flash-alert"><%= flash[:alert] %></div>
+      <% end %>
+
+      <!-- 留言列表 -->
+      <div class="comments-list">
+        <% if @comments.any? %>
+          <% @comments.each do |c| %>
+            <div class="comment-item">
+              <div class="comment-meta">
+                <span><%= c.created_at.strftime("%Y-%m-%d %H:%M") %></span>
+                <span>[<%= c.device_info %>]</span>
+                <span>LOC: <%= c.location.presence || "Location unavailable" %></span>
+              </div>
+              <div class="comment-body"><%= c.body %></div>
+              <% if c.image.attached? %>
+                <%= image_tag c.image, class: 'comment-image' %>
+              <% end %>
+            </div>
+          <% end %>
+        <% else %>
+          <p style="text-align: center; font-size: 9px; opacity: 0.4;">... NO DATA RECORDED ...</p>
+        <% end %>
+      </div>
+
+      <!-- 留言表单 -->
+      <div class="comment-form">
+        <h3 style="font-size: 10px; margin-bottom: 15px; color: #7cf7ff; text-shadow: 0 0 8px rgba(124,247,255,0.35);">[ TRANSMIT LOG ]</h3>
+        <%= form_with model: Comment.new, url: comments_path, local: true, data: { turbo: false }, html: { multipart: true, id: 'commentForm' } do |f| %>
+          <%= hidden_field_tag :stage_id, 'kai' %>
+          <%= hidden_field_tag :public_ip, '', id: 'publicIpField' %>
+          <%= hidden_field_tag :public_location, '', id: 'publicLocationField' %>
+          
+          <div class="form-group">
+            <%= f.label :body, "MESSAGE", class: "form-label" %>
+            <%= f.text_area :body, required: true, rows: 3, class: "form-input", placeholder: "ENTER DATA..." %>
+          </div>
+
+          <div class="form-group">
+            <%= f.label :image, "ATTACH IMAGE (OPTIONAL)", class: "form-label" %>
+            <div class="file-input-wrapper">
+              <%= f.file_field :image, class: "form-input", style: "border: 2px dashed #333; padding: 5px;" %>
+            </div>
+          </div>
+
+          <div style="text-align: right;">
+            <%= f.submit "LOG DATA", class: "btn" %>
+          </div>
+
+        <% end %>
+      </div>
+    </div>
+  <% end %>
 </div>
 
+
 <script>
-document.getElementById('markClear').addEventListener('click', async () => {
-  const stageId = "<%= @stage[:id] %>";
-  try {
-    const res = await fetch('/clear_stage', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': '<%= form_authenticity_token %>' },
-      body: JSON.stringify({ stage_id: stageId })
-    });
-    if (res.ok) {
-      // go back to select to see unlocked state
-      location.href = "/";
-    } else {
-      alert('标记失败');
+(() => {
+  const initStagePage = () => {
+    const geoStatus = document.getElementById('geoStatus'); // Still null as element was removed
+    const publicIpField = document.getElementById('publicIpField');
+    const publicLocationField = document.getElementById('publicLocationField');
+    const commentForm = document.getElementById('commentForm');
+    const markClearButton = document.getElementById('markClear');
+    const visitorContextUrl = "<%= @stage[:id] == 'kai' ? stage_visitor_context_path(@stage[:id]) : '' %>";
+    const csrfToken = '<%= form_authenticity_token %>';
+
+    let geoLookupPromise = Promise.resolve();
+
+    if (publicIpField && publicLocationField) {
+      const setGeoFields = (data = {}) => {
+        const ip = data.ip || data.query || '';
+        const parts = [data.city, data.region || data.regionName, data.country_name || data.country]
+          .filter(Boolean)
+          .map((part) => String(part).trim())
+          .filter(Boolean);
+        const location = [...new Set(parts)].join(' / ');
+
+        publicIpField.value = ip;
+        publicLocationField.value = location;
+
+        return { ip, location, found: Boolean(location || ip) };
+      };
+
+      const persistVisitorContext = ({ ip = '', location = '' } = {}) => {
+        if (!visitorContextUrl || (!ip && !location)) return Promise.resolve();
+
+        return fetch(visitorContextUrl, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-Token': csrfToken
+          },
+          body: JSON.stringify({ ip, location })
+        }).catch(() => undefined);
+      };
+
+      const applyGeoData = (data = {}) => {
+        const result = setGeoFields(data);
+        if (!result.found) throw new Error('empty result');
+        return persistVisitorContext(result).then(() => result);
+      };
+
+      const lookupFromIpapi = () => {
+        return fetch('https://ipapi.co/json/')
+          .then((response) => response.ok ? response.json() : Promise.reject(new Error('ipapi lookup failed')))
+          .then((data) => applyGeoData(data));
+      };
+
+      const lookupFromIpApi = () => {
+        return fetch('https://ip-api.com/json/?fields=status,message,country,regionName,city,query')
+          .then((response) => response.ok ? response.json() : Promise.reject(new Error('ip-api lookup failed')))
+          .then((data) => {
+            if (data.status !== 'success') throw new Error(data.message || 'ip-api failed');
+            return applyGeoData(data);
+          });
+      };
+
+      geoLookupPromise = lookupFromIpapi()
+        .catch(() => lookupFromIpApi())
+        .catch(() => {
+          if (geoStatus) geoStatus.textContent = 'Network node lookup unavailable; fallback location will be used.';
+        });
+
+      if (commentForm && commentForm.dataset.geoBound !== 'true') {
+        commentForm.dataset.geoBound = 'true';
+
+        commentForm.addEventListener('submit', () => {
+          if (geoStatus) geoStatus.textContent = 'Transmitting log...';
+          commentForm.dataset.geoReady = 'true';
+        });
+      }
     }
-  } catch(e) {
-    console.error(e);
-    alert('网络错误');
-  }
-});
+
+    if (markClearButton && markClearButton.dataset.bound !== 'true') {
+      markClearButton.dataset.bound = 'true';
+      markClearButton.addEventListener('click', async () => {
+        const stageId = "<%= @stage[:id] %>";
+
+        try {
+          const res = await fetch('/clear_stage', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': '<%= form_authenticity_token %>' },
+            body: JSON.stringify({ stage_id: stageId })
+          });
+
+          if (res.ok) {
+            location.href = "/";
+          } else {
+            alert('标记失败');
+          }
+        } catch (e) {
+          console.error(e);
+          alert('网络错误');
+        }
+      });
+    }
+  };
+
+  document.addEventListener('DOMContentLoaded', initStagePage, { once: true });
+  document.addEventListener('turbo:load', initStagePage);
+})();
 </script>

@@ -1,11 +1,6 @@
 <!-- app/views/pages/select.html.erb -->
 <%# Pixel Mega Man 3 style Stage Select with avatar center, hover activation, WASD + Arrow nav %>
 
-<!-- 加载像素风格字体 -->
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
-
 <style>
 :root {
   --bg: #329ef7;
@@ -16,19 +11,21 @@
 html, body {
   height: 100%;
   margin: 0;
-  font-family: 'Press Start 2P', monospace;
+  font-family: 'Press Start 2P', 'DotGothic16', 'SimSun', '宋体', monospace;
   background: var(--bg);
   color: #dfe7ff;
   overflow: hidden; /* 绝对禁止滚动 */
   display: flex;
   align-items: center;
   justify-content: center;
+  -webkit-font-smoothing: none;
+  font-smooth: never;
 }
 body { padding: 0; }
 
-h1, .hint, button { font-family: 'Press Start 2P', monospace !important; }
+h1, .hint, button { font-family: 'Press Start 2P', 'DotGothic16', 'SimSun', '宋体', monospace !important; }
 
-h1, .hint, button { font-family: 'Press Start 2P', monospace !important; }
+h1, .hint, button { font-family: 'Press Start 2P', 'DotGothic16', 'SimSun', '宋体', monospace !important; }
 
 .container { 
   max-width: 960px; 
@@ -42,8 +39,8 @@ h1, .hint, button { font-family: 'Press Start 2P', monospace !important; }
 
 h1 {
   text-align: center;
-  font-size: 16px;
-  margin-bottom: 8px;
+  font-size: 18px;
+  margin-bottom: 10px;
   letter-spacing: 2px;
 }
 
@@ -70,7 +67,7 @@ h1 {
   cursor: pointer;
   transition: transform .08s ease, box-shadow .12s ease, border-color .12s;
   user-select: none;
-  font-family: 'Press Start 2P', monospace;
+  font-family: 'Press Start 2P', 'DotGothic16', 'SimSun', '宋体', monospace;
   box-sizing: border-box;
 }
 
@@ -110,8 +107,8 @@ h1 {
   cursor: not-allowed;
 }
 
-.name { margin-top: 8px; font-size: 11px; letter-spacing: 1px; text-align: center; }
-.sub { font-size: 9px; opacity: .85; margin-top: 4px; }
+.name { margin-top: 8px; font-size: 12px; letter-spacing: 1px; text-align: center; }
+.sub { font-size: 10px; opacity: .88; margin-top: 4px; }
 
 .boss.selected .name,
 .boss:hover .name { color: #fff; }
@@ -119,8 +116,6 @@ h1 {
 .boss:hover .sub { color: #adf; opacity: 1; }
 
 /* ===== Center avatar cell ===== */
-.boss.avatar-cell { cursor: default; }
-
 .avatar-img {
   width: 82px;
   height: 82px;
@@ -138,9 +133,9 @@ h1 {
 
 .avatar-name {
   margin-top: 6px;
-  font-size: 9px;
+  font-size: 10px;
   letter-spacing: 2px;
-  font-family: 'Press Start 2P', monospace;
+  font-family: 'Press Start 2P', 'DotGothic16', 'SimSun', '宋体', monospace;
   color: #fff;
 }
 
@@ -173,7 +168,7 @@ h1 {
 .bgm-btn { background: #0b1320; border: 1px solid rgba(255,255,255,0.06); color: #cfe; }
 .clear-all { background: #111; border: 1px solid rgba(255,255,255,0.04); color: #f99; }
 
-.hint { font-size: 10px; opacity: .9; }
+.hint { font-size: 11px; opacity: .92; }
 </style>
 
 <div class="container">
@@ -184,13 +179,13 @@ h1 {
     <% 9.times do |pos| %>
       <% if pos == 4 %>
         <%# === Center: Player Avatar === %>
-        <div tabindex="0" role="button" class="boss avatar-cell unlocked" data-id="avatar" data-idx="4">
+        <div tabindex="0" role="button" class="boss avatar-cell unlocked" data-id="kai" data-idx="4">
           <%= image_tag 'kai.jpg', class: 'avatar-img', alt: 'KAI' %>
           <div class="avatar-name">KAI</div>
         </div>
       <% else %>
         <% s = @stages[boss_idx] %>
-        <% unlocked = @cleared.include?(s[:id]) || boss_idx < 3 %>
+        <% unlocked = true %>
         <div tabindex="0" role="button" class="boss <%= unlocked ? 'unlocked' : 'locked' %>" data-id="<%= s[:id] %>" data-idx="<%= pos %>">
           <div class="thumb"><%= unlocked ? "◎" : "×" %></div>
           <div class="name"><%= s[:name] %></div>
@@ -306,8 +301,6 @@ h1 {
 
   function openBoss(bossEl) {
     if (!bossEl) return
-    // Avatar center - do nothing or navigate to about
-    if (bossEl.dataset.id === 'avatar') return
     if (bossEl.classList.contains('locked')) {
       bossEl.animate([
         { transform: 'translateX(0)' },
