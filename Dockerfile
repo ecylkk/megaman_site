@@ -27,7 +27,7 @@ ENV PATH="$BUNDLE_BIN:$PATH"
 
 # Install application gems
 COPY Gemfile Gemfile.lock ./
-RUN gem install bundler && bundle install
+RUN gem install bundler -v "~> 2.6" && bundle install
 
 # Copy application code
 COPY . .
