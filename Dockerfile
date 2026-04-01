@@ -12,6 +12,7 @@ RUN apt-get update -qq && \
     pkg-config \
     libvips-dev \
     libsqlite3-dev \
+    libyaml-dev \
     curl \
     libpq-dev \
     shared-mime-info && \
