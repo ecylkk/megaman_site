@@ -88,6 +88,8 @@ Rails.application.configure do
   config.active_record.dump_schema_after_migration = false
 
   # Enable DNS rebinding protection and other `Host` header attacks.
-  # Allow Render.com hosts
-  config.hosts.clear
+  config.hosts << "megaman-site.onrender.com"
+  config.hosts << ".onrender.com"
+  config.hosts << "127.0.0.1"
+  config.hosts << "localhost"
 end
