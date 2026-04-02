@@ -87,9 +87,6 @@ Rails.application.configure do
   # Do not dump schema after migrations.
   config.active_record.dump_schema_after_migration = false
 
-  # Enable DNS rebinding protection and other `Host` header attacks.
-  config.hosts << "megaman-site.onrender.com"
-  config.hosts << ".onrender.com"
-  config.hosts << "127.0.0.1"
-  config.hosts << "localhost"
+  # Bypass host authorization entirely for Render deployment
+  config.host_authorization = { exclude: ->(request) { true } }
 end
